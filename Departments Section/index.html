@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hospital Departments</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f8fafc;
+    }
+    
+    .alphabet-scroll {
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    
+    .alphabet-scroll::-webkit-scrollbar {
+      display: none;
+    }
+    
+    .dept-card {
+      transition: all 0.3s ease;
+      border-left: 4px solid transparent;
+    }
+    
+    .dept-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      border-left-color: #10b981;
+    }
+    
+    .dept-card.active {
+      background-color: #f0fdf4;
+      border-left-color: #10b981;
+    }
+    
+    .letter-btn {
+      transition: all 0.2s ease;
+    }
+    
+    .letter-btn.active {
+      background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+      color: white;
+      box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3);
+    }
+    
+    .details-panel {
+      background: linear-gradient(to bottom right, #ffffff 0%, #f8fafc 100%);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+      border-radius: 12px;
+      transition: all 0.3s ease;
+    }
+    
+    .scroll-btn {
+      background-color: white;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      transition: all 0.2s ease;
+    }
+    
+    .scroll-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <div class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+    <div class="text-center mb-10">
+      <h1 class="text-3xl font-bold text-gray-900 sm:text-4xl">Our Medical Departments</h1>
+      <p class="mt-3 text-lg text-gray-500 max-w-2xl mx-auto">
+        Explore our specialized healthcare services across various medical disciplines
+      </p>
+    </div>
+
+    <!-- Alphabet Navigation -->
+    <div class="flex items-center justify-between mb-8">
+      <button id="prevBtn" class="scroll-btn w-10 h-10 rounded-full flex items-center justify-center text-gray-600">
+        <i class="fas fa-chevron-left"></i>
+      </button>
+      
+      <div id="letters" class="flex-1 mx-4 overflow-x-auto alphabet-scroll py-2 flex space-x-2"></div>
+      
+      <button id="nextBtn" class="scroll-btn w-10 h-10 rounded-full flex items-center justify-center text-gray-600">
+        <i class="fas fa-chevron-right"></i>
+      </button>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Department List -->
+      <div class="lg:col-span-1 bg-white rounded-xl shadow-sm overflow-hidden">
+        <div class="p-4 border-b border-gray-100">
+          <h3 class="text-lg font-medium text-gray-900">
+            <i class="fas fa-list-ul text-emerald-500 mr-2"></i>
+            Departments <span id="letterIndicator" class="text-emerald-600">(A)</span>
+          </h3>
+        </div>
+        <div id="deptList" class="divide-y divide-gray-100 overflow-y-auto" style="max-height: 500px;"></div>
+      </div>
+
+      <!-- Department Details -->
+      <div class="lg:col-span-2">
+        <div id="detailsPlaceholder" class="details-panel h-full flex flex-col items-center justify-center p-8 text-center">
+          <div class="w-24 h-24 bg-emerald-50 rounded-full flex items-center justify-center mb-4">
+            <i class="fas fa-hospital text-emerald-500 text-3xl"></i>
+          </div>
+          <h3 class="text-xl font-medium text-gray-700 mb-2">Select a Department</h3>
+          <p class="text-gray-500 max-w-md">
+            Choose a department from the list to view detailed information about services and specialties
+          </p>
+        </div>
+        
+        <div id="deptDetails" class="details-panel hidden">
+          <div class="p-6">
+            <div class="flex items-start justify-between">
+              <div>
+                <h3 id="deptHeading" class="text-2xl font-bold text-gray-900 mb-2"></h3>
+                <div class="flex items-center text-sm text-gray-500 mb-4">
+                  <span id="deptCategory" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800"></span>
+                </div>
+              </div>
+              <button id="closeDetails" class="text-gray-400 hover:text-gray-500">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+            
+            <p id="deptDesc" class="text-gray-700 mb-6"></p>
+            
+            <div class="mb-6">
+              <h4 class="font-medium text-gray-900 mb-3 flex items-center">
+                <i class="fas fa-check-circle text-emerald-500 mr-2"></i>
+                Key Services
+              </h4>
+              <ul id="deptPoints" class="grid grid-cols-1 md:grid-cols-2 gap-2"></ul>
+            </div>
+            
+            <!-- <div class="border-t border-gray-100 pt-4">
+              <div class="flex space-x-3">
+                <button class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none">
+                  <i class="fas fa-calendar-alt mr-2"></i>
+                  Book Appointment
+                </button>
+                <button class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
+                  <i class="fas fa-phone-alt mr-2"></i>
+                  Contact Department
+                </button>
+              </div>
+            </div> -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="departments.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
